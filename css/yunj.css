@@ -1,0 +1,9 @@
+.yunj-background {
+	background-image: url(../img/bg.jpg);
+	background-repeat:no-repeat;
+	background-position: left top;
+	background-attachment:fixed;
+	background-size:100% 112%;
+	-moz-background-size:100% 100%;
+}
+

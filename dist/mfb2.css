@@ -1,0 +1,6 @@
+.ion-plus-round:before {
+content:"+";
+}
+.ion-close-round:before {
+content:"X";
+}
