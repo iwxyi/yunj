@@ -38,10 +38,28 @@
 		$sql = "SELECT * FROM notes WHERE name = '$tname'";
 		$row = row($sql);
 		if ($row && $row['code'])
-			header("Location:" . $_SERVER['PHP_SELF'] . '?r=' . $row['code']);
+		{
+			$url = "Location:" . $_SERVER['PHP_SELF'] . '?r=' . $row['code'];
+			$url = str_replace("/index.php", "", $url);
+			header($url);
+		}
 		else
+		{
+			$ttname = urldecode($tname);
+			$row = row("SELECT * FROM notes WHERE name = '$ttname'");
+			if ($row)
+			{
+				$url = "Location:" . $_SERVER['PHP_SELF'] . '?r=' . $row['code'];
+				$url = str_replace("/index.php", "", $url);
+				header($url);
+			}
+			else
+			{
+				echo "当前页没有分享内容。<br />请保存后再试。";
+			}
+			// echo "当前页没有分享内容。<br />请保存后再试。";
+		}
 //			header("Location:" . $_SERVER['PHP_SELF'] . '?n=' . $tname);
-			echo "当前页没有分享内容。<br />请保存后再试。";
 	} 
 	else if ($read)                               // 只读
 	{
@@ -49,6 +67,30 @@
 		$tread = sqlsafe($read);
 		$row = row("SELECT * FROM notes WHERE code = '$tread'");
 		if ($row) $info = $row['info'];
+		else
+		{
+			$ttread = urldecode($tread);
+			$row = row("SELECT * FROM notes WHERE code = '$ttread'");
+			if ($row)
+			{
+				$tread = $ttread;
+				$info = $row['info'];
+			}
+			else
+			{
+				$ttread = urlencode($tread);
+				$row = row("SELECT * FROM notes WHERE code = '$ttread'");
+				if ($row)
+				{
+					$tread = $ttread;
+					$info = $row['info'];
+				}
+				else
+				{
+					echo "当前页没有分享内容。<br />请保存后再试。";
+				}
+			}
+		}
 		require "sharer.php";
 	}
 	else if ($refresh != NULL)
@@ -185,11 +227,13 @@
 	function keeper() // 保存记录
 	{
 		setRecentCookie();
+
 		
 		global $name, $info, $time, $IP;
 		$sql = "SELECT * FROM notes WHERE name = '$name'";
 		$tname = sqlsafe($name);
 		$tinfo = sqlsafe($info);
+		
 		if (!($row = row($sql)))  // 记录不存在
 		{
 			adder();
@@ -259,7 +303,23 @@
 
 	function addVal($s) // 某个数值+1
 	{
-		global $name, $read;
+		global $name, $read, $IP;
+
+		if ($name)
+		{
+			$sql = "SELECT * from notes where name = '$name' and IP = '$IP'"; // IP 相同
+			if (row($sql)) {
+				return ;
+			}
+		}
+		else if ($read)
+		{
+			$sql = "SELECT * from notes where code = '$read' and IP = '$IP'"; // IP 相同
+			if (row($sql)) {
+				return ;
+			}
+		}
+
 		if ($name && $row = row("SELECT * FROM notes WHERE name = '$name'"))
 		{
 			$times = $row[$s] + 1;
@@ -320,26 +380,26 @@
 
 		if ($start == null)
 		{
-			setcookie('recent_start', '1', time()+1e9);
+			setcookie('recent_start', '1', time()+31622400);
 			$start = 1; 
 		}
 		if ($end == null)
 		{
-			setcookie('recent_end', '2', time()+1e9); // 不包含结尾
-			setcookie('recent_1', $name, time()+604800);
+			setcookie('recent_end', '2', time()+31622400);    // 不包含结尾
+			setcookie('recent_1', $name, time()+604800); // 3600*24*7
 			return ;
 		}
 		
-		if (seizecookie('recent_'.($end-1)) == $name) // 已经是最新的了
+		if (seizecookie('recent_'.($end-1)) == $name)    // 已经是最新的了
 			return ;
 		
-		for ($i = $start; $i < $end; $i++)   // 更新起始位置
+		for ($i = $start; $i < $end; $i++)               // 更新起始位置
 			if (seizecookie('recent_'.$i) != null)
 				break;
-		if ($start != $i)
+		if ($start != $i) // start的位置已经过期
 		{
 			$start = $i;
-			setcookie('recent_start', $start, time()+1e9);
+			setcookie('recent_start', $start, time()+31622400);
 		}
 		
 		for ($i = $start; $i < $end; $i++)
@@ -353,7 +413,7 @@
 		}
 		
 		setcookie('recent_'.$end, $name, time()+604800);
-		setcookie('recent_end', $end+1, time()+1e9);
+		setcookie('recent_end', $end+1, time()+31622400);
 	}
 	
 	function delRecentCookie($name)

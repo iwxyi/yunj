@@ -179,7 +179,7 @@
 		if (!$blank)
 			$s = trim($s);         // 去空格
 		$s = stripslashes($s);     // 去转义
-		$s - htmlspecialchars($s); // 防注入
+		$s = htmlspecialchars($s); // 防注入
 		return $s;
 	}
 

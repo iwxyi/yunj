@@ -280,7 +280,7 @@ function page_next() {
 	else
 		url = name + "_1";
 	
-	openYunj2("index.php?n=" + encodeURI(url));
+	openYunj2("n=" + encodeURI(url));
 	
 	return false;
 }
@@ -357,6 +357,8 @@ function sendAjax()
 			var new_info = XHR.responseText; // 新的信息
 			// new_info = new_info.replace(/\r/, ""); // 返回的信息莫名多了 \r，还不能直接去掉
 			new_info = decodeURI((encodeURI(new_info)).replace(/%0D/g, ""));
+			new_info = textToHtml(new_info);
+			// alert(new_info);
 
 			// alert(info.length + "  " + new_info.length + "\n上传:【" + (info) + "】\n\n返回:【" + (new_info) + "】\n\n现在:【" + (document.getElementById("info").value) + "】");
 
@@ -436,4 +438,14 @@ function sendAjax()
 	// document.getElementById('info').focus();
 	
 	return false;
+}
+
+function textToHtml(s)
+{
+	s = s.replace(/&lt;/g, "<");
+	s = s.replace(/&gt;/g, ">");
+	s = s.replace(/&nbsp;/g, " ");
+	s = s.replace(/&quot;/g, "\"");
+	s = s.replace(/&amp;/g, "&");
+	return s;
 }
