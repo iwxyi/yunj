@@ -219,9 +219,12 @@
                             $info = $row['info'];
                     echo $info;
                 ?></textarea>
+
+	<footer style="text-align: center;"><a href="http://www.beian.miit.gov.cn">浙ICP备17046339号-5</a></footer>
+
 		</div>
 	</div>
-	
+
 	<script>
 		var initname = "<?php global $name; echo urlencode($name); ?>";
 		var initinfo = "<?php global $info; if ($info != null) echo urlencode($info);?>";

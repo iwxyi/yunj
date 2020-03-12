@@ -63,7 +63,7 @@ background: #FFF
 			{
 				$index = 0;
 				date_default_timezone_set('PRC'); // 临时设置成中国时区
-				while ($row = mysql_fetch_array($result))
+				while ($row = $result->fetch_assoc())
 				{
 					echo "<tr>";
 					echo "<td>" . ++$index . "</td>";

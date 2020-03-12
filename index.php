@@ -267,12 +267,12 @@
 		$early_info2 = "";
 
 		$result = query("SELECT * FROM history WHERE name = '$name' ORDER BY time DESC");
-		if ($row = mysql_fetch_array($result)) // 获取最新记录
+		if ($row = $result->fetch_assoc()) // 获取最新记录
 		{
 			$early_time = $row['time'];
 			$early_info = $row['info'];
 		}
-		if ($row = mysql_fetch_array($result)) // 获取第二新记录
+		if ($row = $result->fetch_assoc()) // 获取第二新记录
 		{
 			$early_time2 = $row['time'];
 			$early_info2 = $row['info'];
